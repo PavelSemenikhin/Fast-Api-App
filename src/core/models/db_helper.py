@@ -54,3 +54,5 @@ db_helper = DatabaseHelper(
     max_overflow=settings.db.max_overflow,
     pool_pre_ping=settings.db.pool_pre_ping,
 )
+
+async_get_db = db_helper.get_db
