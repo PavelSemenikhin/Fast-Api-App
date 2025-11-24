@@ -1,33 +1,42 @@
 services:
   pg:
     image: postgres:15
-    container_name: fast-api-app-pg
+    restart: always
+    container_name: fastapi_pg
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: postgres
-      PGDATA: /var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
-      timeout: 3s
-      retries: 3
+      retries: 5
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: fast-api-app-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    ports:
-      - "5050:80"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    restart: always
+    env_file:
+        - ./src/.env.docker
+    working_dir: /src
+    command: >
+      uvicorn main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+    volumes:
+      - ./src:/src
     depends_on:
-      - pg
+      pg:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
 
 volumes:
   pgdata:
