@@ -1,5 +1,10 @@
+from urllib.parse import urlparse
+
 from pydantic import BaseModel, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import logging
+
+logger = logging.getLogger("uvicorn")
 
 
 class RunConfig(BaseModel):
@@ -36,7 +41,7 @@ class DatabaseConfig(BaseModel):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        # env_file=".env.local",
         case_sensitive=False,
         env_nested_delimiter="__",
         env_prefix="APP_CONFIG__",
@@ -48,5 +53,12 @@ class Settings(BaseSettings):
 
     db: DatabaseConfig
 
+    def log_active_env(self):
+        parsed = urlparse(str(self.db.url))
+        env = "docker" if parsed.hostname == "pg" else "local"
+        logger.warning(f"[ENV] Active environment: {env}👍👍👍👍")
+        logger.warning(f"[DB] Host: {parsed.hostname}, Port: {parsed.port}👍👍👍👍")
+
 
 settings = Settings()
+settings.log_active_env()
