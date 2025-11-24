@@ -2,10 +2,11 @@
 __pycache__/
 *.py[codz]
 *$py.class
-
+src/.env.local
+src/.env.docker
 # C extensions
 *.so
-
+.credentialstest
 # Distribution / packaging
 .Python
 build/
