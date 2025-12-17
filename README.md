@@ -185,4 +185,4 @@ This matches how senior backend engineers structure FastAPI + SQLAlchemy project
 
 ---
 
-You're ready to build production-grade FastAPI applications 🚀 
+You're ready to build production-grade FastAPI applications 🚀  
